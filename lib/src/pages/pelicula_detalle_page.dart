@@ -9,7 +9,6 @@ class PeliculaDetallePage extends StatelessWidget {
     final Pelicula pelicula = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: CustomScrollView(
-        key: ,
         slivers: <Widget>[
           _crearAppBar(pelicula),
           SliverList(
@@ -18,7 +17,6 @@ class PeliculaDetallePage extends StatelessWidget {
                 height: 10.0,
               ),
               _posterTitulo(pelicula, context),
-              _descripcion(pelicula),
               _descripcion(pelicula),
               _descripcion(pelicula),
               _descripcion(pelicula),
@@ -62,13 +60,16 @@ class PeliculaDetallePage extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20.0),
       child: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Image(
-              image: NetworkImage(
-                pelicula.getPosterImg(),
+          Hero(
+            tag: pelicula.uniqueId,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Image(
+                image: NetworkImage(
+                  pelicula.getPosterImg(),
+                ),
+                height: 150.0,
               ),
-              height: 150.0,
             ),
           ),
           Flexible(
@@ -112,10 +113,10 @@ class PeliculaDetallePage extends StatelessWidget {
     );
   }
 
-  _crearCasting(Pelicula pelicula) {
+  Widget _crearCasting(Pelicula pelicula) {
     final peliProvider = new PeliculasProvider();
 
-    FutureBuilder(
+    return FutureBuilder(
       future: peliProvider.getCast(pelicula.id.toString()),
       // initialData: InitialData,
       builder: (context, AsyncSnapshot<List> snapshot) {
@@ -132,14 +133,37 @@ class PeliculaDetallePage extends StatelessWidget {
     return SizedBox(
       height: 200.0,
       child: PageView.builder(
+        pageSnapping: false,
         controller: PageController(
           viewportFraction: 0.3,
           initialPage: 1,
         ),
         itemCount: actores.length,
-        itemBuilder: (contenxt, i) {
-          return Text('HOLA22...');
-        },
+        itemBuilder: (contenxt, i) => _tarjetaActor(actores[i]),
+      ),
+    );
+  }
+
+  Widget _tarjetaActor(Actor actor) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: FadeInImage(
+              placeholder: AssetImage('assets/img/no-image.jpg'),
+              image: NetworkImage(
+                actor.getFoto(),
+              ),
+              height: 150.0,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Text(
+            actor.name,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
