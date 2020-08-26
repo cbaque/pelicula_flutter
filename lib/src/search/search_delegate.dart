@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:peliculas/src/models/pelicula_model.dart';
+import 'package:peliculas/src/providers/peliculas_provider.dart';
 
 class DataSearch extends SearchDelegate {
+  final peliProvider = new PeliculasProvider();
+
   final pelicula = [
     'Spiderman',
     'Aquaman',
@@ -54,22 +58,41 @@ class DataSearch extends SearchDelegate {
   Widget buildSuggestions(BuildContext context) {
     // ignore: todo
     // TODO: las sugerencias que aparecen cuando la persona escribe
+    if (query.isEmpty) {
+      return Container();
+    }
 
-    final listaSugerida = (query.isEmpty)
-        ? peliculasRecientes
-        : pelicula
-            .where((p) => p.toLowerCase().startsWith(query.toLowerCase()))
-            .toList();
-
-    return ListView.builder(
-      itemBuilder: (context, i) {
-        return ListTile(
-          leading: Icon(Icons.movie),
-          title: Text(listaSugerida[i]),
-          onTap: () {},
-        );
+    return FutureBuilder(
+      future: peliProvider.buscarPelicula(query),
+      // initialData: InitialData,
+      builder: (context, AsyncSnapshot<List<Pelicula>> snapshot) {
+        if (snapshot.hasData) {
+          final peliculas = snapshot.data;
+          return ListView(
+            children: peliculas.map((pelicula) {
+              return ListTile(
+                leading: FadeInImage(
+                  width: 50.00,
+                  fit: BoxFit.contain,
+                  placeholder: AssetImage('assets/img/no-image.png'),
+                  image: NetworkImage(pelicula.getPosterImg()),
+                ),
+                title: Text(pelicula.title),
+                subtitle: Text(pelicula.originalTitle),
+                onTap: () {
+                  close(context, null);
+                  pelicula.uniqueId = '';
+                  Navigator.pushNamed(context, 'detalle', arguments: pelicula);
+                },
+              );
+            }).toList(),
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
       },
-      itemCount: listaSugerida.length,
     );
   }
 }

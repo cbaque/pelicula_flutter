@@ -66,7 +66,7 @@ class Pelicula {
 
   getPosterImg() {
     if (posterPath == null) {
-      return 'https://image.flaticon.com/icons/svg/2748/2748614.svg';
+      return 'https://safetyaustraliagroup.com.au/wp-content/uploads/2019/05/image-not-found.png';
     } else {
       return 'https://image.tmdb.org/t/p/original/$posterPath';
     }
@@ -74,7 +74,7 @@ class Pelicula {
 
   getBackImg() {
     if (posterPath == null) {
-      return 'https://image.flaticon.com/icons/svg/2748/2748614.svg';
+      return 'https://safetyaustraliagroup.com.au/wp-content/uploads/2019/05/image-not-found.png';
     } else {
       return 'https://image.tmdb.org/t/p/w500/$backdropPath';
     }
